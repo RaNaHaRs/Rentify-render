@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: ${DEV_DB_URL:jdbc:mysql://localhost:3306/rental?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${DEV_DB_USERNAME:root}
+    password: ${DEV_DB_PASSWORD}
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true

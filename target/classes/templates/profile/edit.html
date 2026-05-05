@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page('Edit profile', ~{::content})}">
+<section th:fragment="content" class="content-page page-container" data-page-mode="content">
+    <section class="my-4 my-lg-5">
+        <div class="row g-4 align-items-start">
+            <div class="col-xl-4">
+                <div class="surface-card p-4 p-lg-5">
+                    <span class="eyebrow">Account settings</span>
+                    <h1 class="h3 mt-3 mb-2">Update your profile with a cleaner dashboard form.</h1>
+                    <p class="text-body-secondary mb-0">Keep your personal details and address information up to date.</p>
+
+                    <div class="notification-panel__list mt-4">
+                        <div class="notification-item">
+                            <small>Profile sync</small>
+                            <strong>Up to date</strong>
+                            <p class="text-body-secondary mb-0">Review and update your profile details whenever needed.</p>
+                        </div>
+                        <div class="notification-item notification-item--accent">
+                            <small>Account details</small>
+                            <strong>Easy editing</strong>
+                            <p class="text-body-secondary mb-0">Manage your information with a simple, organized form.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-8">
+                <div class="surface-card p-4 p-lg-5">
+                    <form th:action="@{/account/profile}" th:object="${updateProfileRequest}" method="post">
+                        <div class="form-section">
+                            <h2 class="h5 mb-3">Personal details</h2>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">First name</label>
+                                    <input class="form-control" th:field="*{firstName}">
+                                    <div class="field-error" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Last name</label>
+                                    <input class="form-control" th:field="*{lastName}">
+                                    <div class="field-error" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Birthday</label>
+                                    <input class="form-control" th:field="*{birthday}" type="date">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Phone</label>
+                                    <input class="form-control" th:field="*{phone}">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">About</label>
+                                    <textarea class="form-control" th:field="*{about}" rows="4"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section mt-4">
+                            <h2 class="h5 mb-3">Address</h2>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label">Address</label>
+                                    <input class="form-control" th:field="*{formattedAddress}">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">City</label>
+                                    <input class="form-control" th:field="*{locality}">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Country</label>
+                                    <input class="form-control" th:field="*{country}">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Postal code</label>
+                                    <input class="form-control" th:field="*{postalCode}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid d-md-flex justify-content-md-end mt-4">
+                            <button class="btn btn-brand btn-lg" type="submit">Save changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>
+</html>

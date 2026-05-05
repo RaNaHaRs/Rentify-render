@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page('Landlord dashboard', ~{::content})}">
+<section th:fragment="content" class="dashboard-page" data-page-mode="dashboard">
+    <div class="skeleton-shell" data-skeleton-shell>
+        <div data-skeleton-loader hidden>
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="card shadow-sm border-0 h-100 p-4">
+                        <div class="skeleton skeleton-kicker w-25"></div>
+                        <div class="skeleton skeleton-title w-50"></div>
+                        <div class="skeleton skeleton-text w-75"></div>
+                    </div>
+                </div>
+                <div class="col-md-6" th:each="item : ${#numbers.sequence(1,2)}">
+                    <div class="card shadow-sm border-0 h-100 p-4">
+                        <div class="skeleton skeleton-kicker w-50"></div>
+                        <div class="skeleton skeleton-title w-75 mt-3"></div>
+                        <div class="skeleton skeleton-card mt-3"></div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="card shadow-sm border-0 h-100 p-4">
+                        <div class="skeleton skeleton-kicker w-25"></div>
+                        <div class="skeleton skeleton-title w-50 mt-3"></div>
+                        <div class="skeleton skeleton-card mt-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div data-skeleton-content>
+            <div class="dashboard-layout dashboard-container">
+                <section class="surface-card dashboard-hero">
+                    <span class="eyebrow">Landlord dashboard</span>
+                    <h3 class="mt-3 mb-2">
+                        Welcome,
+                        <span th:text="${loggedInUser.name}">Landlord</span>
+                    </h3>
+                    <p class="text-body-secondary mb-0">Monitor listings, booking requests, and collection status from one compact workspace.</p>
+                </section>
+
+                <div class="dashboard-grid">
+                    <section class="surface-card chart-panel dashboard-card">
+                        <div class="chart-panel__header mb-3">
+                            <div>
+                                <span class="dashboard-card__kicker">Revenue view</span>
+                                <h4 class="mt-3 mb-2">Portfolio performance</h4>
+                                <p class="text-body-secondary mb-0">Properties, total bookings, and revenue stay visible in a single comparison chart.</p>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card__body">
+                            <div class="chart-box">
+                                <canvas id="landlordPortfolioChart"></canvas>
+                            </div>
+                            <div class="dashboard-card__summary">
+                                <div class="dashboard-card__stat">
+                                    <span>Total Properties</span>
+                                    <strong th:text="${totalProperties}">0</strong>
+                                </div>
+                                <div class="dashboard-card__stat">
+                                    <span>Total Bookings</span>
+                                    <strong th:text="${totalBookingsReceived}">0</strong>
+                                </div>
+                                <div class="dashboard-card__stat">
+                                    <span>Total Revenue</span>
+                                    <strong th:text="${'INR ' + #numbers.formatDecimal(totalRevenue, 0, 'COMMA', 2, 'POINT')}">INR 0.00</strong>
+                                </div>
+                                <div class="dashboard-card__stat">
+                                    <span>Pending Approvals</span>
+                                    <strong th:text="${pendingApprovals}">0</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="surface-card chart-panel dashboard-card">
+                        <div class="chart-panel__header mb-3">
+                            <div>
+                                <span class="dashboard-card__kicker">Booking pipeline</span>
+                                <h4 class="mt-3 mb-2">Request status split</h4>
+                                <p class="text-body-secondary mb-0">Pending, approved, and rejected booking requests remain visible without scrolling.</p>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card__body">
+                            <div class="chart-box">
+                                <canvas id="landlordStatusChart"></canvas>
+                            </div>
+                            <div class="dashboard-card__summary dashboard-card__summary--split">
+                                <div class="dashboard-card__stat">
+                                    <span>Pending</span>
+                                    <strong th:text="${pendingApprovals}">0</strong>
+                                </div>
+                                <div class="dashboard-card__stat">
+                                    <span>Approved</span>
+                                    <strong th:text="${approvedReservations}">0</strong>
+                                </div>
+                                <div class="dashboard-card__stat">
+                                    <span>Rejected</span>
+                                    <strong th:text="${rejectedReservations}">0</strong>
+                                </div>
+                                <div class="dashboard-card__stat">
+                                    <span>Paid Bookings</span>
+                                    <strong th:text="${paidBookings}">0</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <section class="surface-card chart-panel dashboard-card dashboard-bottom">
+                    <div class="chart-panel__header mb-3">
+                        <div>
+                            <span class="dashboard-card__kicker">Collections</span>
+                            <h4 class="mt-3 mb-2">Payment collection status</h4>
+                            <p class="text-body-secondary mb-0">Paid bookings and outstanding approved reservations stay highlighted as the bottom chart.</p>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card__body">
+                        <div class="chart-box chart-box--sm">
+                            <canvas id="landlordCollectionChart"></canvas>
+                        </div>
+                        <div class="dashboard-mini-grid">
+                            <div class="dashboard-card__stat">
+                                <span>Paid Bookings</span>
+                                <strong th:text="${paidBookings}">0</strong>
+                            </div>
+                            <div class="dashboard-card__stat">
+                                <span>Outstanding</span>
+                                <strong th:text="${outstandingPayments}">0</strong>
+                            </div>
+                            <div class="dashboard-card__stat">
+                                <span>Pending Approvals</span>
+                                <strong th:text="${pendingApprovals}">0</strong>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof Chart === 'undefined') {
+                return;
+            }
+
+            const compactLegend = {
+                position: 'bottom',
+                labels: {
+                    font: {
+                        size: 11
+                    },
+                    boxWidth: 12,
+                    padding: 10
+                }
+            };
+
+            const landlordPortfolioChartElement = document.getElementById('landlordPortfolioChart');
+            if (landlordPortfolioChartElement) {
+                new Chart(landlordPortfolioChartElement, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Properties', 'Bookings', 'Revenue'],
+                        datasets: [{
+                            label: 'Portfolio metrics',
+                            data: [
+                                /*[[${totalProperties}]]*/ 0,
+                                /*[[${totalBookings}]]*/ 0,
+                                /*[[${totalRevenue}]]*/ 0
+                            ],
+                            backgroundColor: ['#667eea', '#feca57', '#2ecc71'],
+                            borderRadius: 14,
+                            maxBarThickness: 56
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        layout: {
+                            padding: 10
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            const landlordStatusChartElement = document.getElementById('landlordStatusChart');
+            if (landlordStatusChartElement) {
+                new Chart(landlordStatusChartElement, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Pending', 'Approved', 'Rejected'],
+                        datasets: [{
+                            data: [
+                                /*[[${pendingApprovals}]]*/ 0,
+                                /*[[${approvedReservations}]]*/ 0,
+                                /*[[${rejectedReservations}]]*/ 0
+                            ],
+                            backgroundColor: ['#ff9f43', '#2ecc71', '#ff7675'],
+                            borderColor: '#ffffff',
+                            borderWidth: 3,
+                            radius: '85%',
+                            cutout: '40%'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        layout: {
+                            padding: 10
+                        },
+                        plugins: {
+                            legend: compactLegend
+                        }
+                    }
+                });
+            }
+
+            const landlordCollectionChartElement = document.getElementById('landlordCollectionChart');
+            if (landlordCollectionChartElement) {
+                new Chart(landlordCollectionChartElement, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Paid', 'Outstanding'],
+                        datasets: [{
+                            label: 'Collections',
+                            data: [
+                                /*[[${paidBookings}]]*/ 0,
+                                /*[[${outstandingPayments}]]*/ 0
+                            ],
+                            backgroundColor: ['#2ecc71', '#ff9f43'],
+                            borderRadius: 12,
+                            maxBarThickness: 42
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        layout: {
+                            padding: 10
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</section>
+</html>

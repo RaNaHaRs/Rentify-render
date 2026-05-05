@@ -1,0 +1,4 @@
+com\harsh\rentify\RoomListingFlowIntegrationTest.class
+com\harsh\rentify\RentifyApplicationTests.class
+com\harsh\rentify\AuthFlowIntegrationTest.class
+com\harsh\rentify\PaymentFlowIntegrationTest.class

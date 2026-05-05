@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page('Browse properties', ~{::content})}">
+<section th:fragment="content" class="page-container" data-page-mode="content">
+    <section class="surface-card dashboard-hero my-4 my-lg-5">
+        <span class="eyebrow">Tenant workspace</span>
+        <h1 class="h2 mt-3 mb-2">Browse properties</h1>
+        <p class="text-body-secondary mb-0">Explore live listings from approved landlords and open any property for full details.</p>
+    </section>
+
+    <div class="surface-card p-4 p-lg-5">
+        <form method="get" th:action="@{/properties}" class="row g-3 align-items-end mb-4">
+            <div class="col-lg-4">
+                <label class="form-label" for="propertyKeyword">Search</label>
+                <input id="propertyKeyword"
+                       type="text"
+                       name="keyword"
+                       th:value="${search.keyword}"
+                       placeholder="Search by city or title"
+                       class="form-control">
+            </div>
+            <div class="col-sm-6 col-lg-2">
+                <label class="form-label" for="propertyMinPrice">Min Price</label>
+                <select id="propertyMinPrice" name="minPrice" class="form-select">
+                    <option value="">Min Price</option>
+                    <option th:each="price : ${priceOptions}"
+                            th:value="${price}"
+                            th:selected="${search.minPrice != null and search.minPrice.compareTo(price) == 0}"
+                            th:text="${'INR ' + #numbers.formatDecimal(price, 0, 'COMMA', 2, 'POINT')}">INR 0.00</option>
+                </select>
+            </div>
+            <div class="col-sm-6 col-lg-2">
+                <label class="form-label" for="propertyMaxPrice">Max Price</label>
+                <select id="propertyMaxPrice" name="maxPrice" class="form-select">
+                    <option value="">Max Price</option>
+                    <option th:each="price : ${priceOptions}"
+                            th:value="${price}"
+                            th:selected="${search.maxPrice != null and search.maxPrice.compareTo(price) == 0}"
+                            th:text="${'INR ' + #numbers.formatDecimal(price, 0, 'COMMA', 2, 'POINT')}">INR 0.00</option>
+                </select>
+            </div>
+            <div class="col-sm-8 col-lg-2">
+                <label class="form-label" for="propertySort">Sort</label>
+                <select id="propertySort" name="sort" class="form-select">
+                    <option value="">Sort</option>
+                    <option value="priceAsc" th:selected="${search.sort == 'priceAsc'}">Price Low to High</option>
+                    <option value="priceDesc" th:selected="${search.sort == 'priceDesc'}">Price High to Low</option>
+                    <option value="newest" th:selected="${search.sort == 'newest'}">Newest</option>
+                </select>
+            </div>
+            <div class="col-sm-4 col-lg-2 d-grid">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </form>
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+            <div>
+                <h2 class="h4 mb-1">Available listings</h2>
+                <p class="text-body-secondary mb-0">Current property inventory in the platform.</p>
+            </div>
+            <span class="status-pill status-pill--neutral" th:text="${#lists.size(properties) + ' listings'}">0 listings</span>
+        </div>
+
+        <div th:if="${#lists.isEmpty(properties)}" class="text-body-secondary">
+            No listings are available yet.
+        </div>
+
+        <div class="row g-4" th:if="${!#lists.isEmpty(properties)}">
+            <div class="col-md-6 col-xl-4" th:each="property : ${properties}">
+                <article class="listing-card h-100">
+                    <div class="listing-card__media">
+                        <img class="listing-card__image" th:src="${property.imageUrl}" alt="Property image">
+                        <div class="listing-card__overlay">
+                            <span class="status-pill status-pill--accent" th:text="${property.type}">Type</span>
+                            <span class="status-pill status-pill--light" th:text="${property.maxPeople + ' guests'}">Guests</span>
+                        </div>
+                    </div>
+                    <div class="listing-card__body">
+                        <div class="d-flex justify-content-between gap-3 align-items-start">
+                            <div>
+                                <h3 class="h5 mb-1" th:text="${property.title}">Listing title</h3>
+                                <p class="text-body-secondary mb-2" th:text="${property.location}">Location</p>
+                                <p class="small mb-0">Hosted by <span th:text="${property.hostDisplayName}">Host</span></p>
+                            </div>
+                            <div class="text-end">
+                                <p class="price-tag mb-2" th:text="${'INR ' + #numbers.formatDecimal(property.overnightPrice, 0, 'COMMA', 2, 'POINT')}">INR 0.00</p>
+                                <small class="text-body-secondary" th:text="${'Rating ' + #numbers.formatDecimal(property.averageRating, 1, 1)}">Rating 0.0</small>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end mt-3">
+                            <a class="btn btn-soft btn-sm" th:href="@{'/rooms/' + ${property.id}}">View listing</a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</section>
+</html>

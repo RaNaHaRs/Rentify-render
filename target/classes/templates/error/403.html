@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: page('Access denied', ~{::content})}">
+<section th:fragment="content" data-page-mode="marketing">
+    <section class="error-panel">
+        <span class="eyebrow">403</span>
+        <h1 class="display-5 mt-3">You do not have access to this page.</h1>
+        <p class="lead text-body-secondary">The current account does not have permission for this route.</p>
+        <div class="d-flex justify-content-center flex-wrap gap-3">
+            <a class="btn btn-brand" th:href="@{/dashboard}" sec:authorize="isAuthenticated()">Go to dashboard</a>
+            <a class="btn btn-brand" th:href="@{/login}" sec:authorize="!isAuthenticated()">Login</a>
+        </div>
+    </section>
+</section>
+</html>

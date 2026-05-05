@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page('Not found', ~{::content})}">
+<section th:fragment="content" data-page-mode="marketing">
+    <section class="error-panel">
+        <span class="eyebrow">404</span>
+        <h1 class="display-5 mt-3" th:text="${title}">Page not found</h1>
+        <p class="lead text-body-secondary" th:text="${message}">The page you requested does not exist.</p>
+        <a class="btn btn-brand" th:href="@{/rooms}">Browse listings</a>
+    </section>
+</section>
+</html>

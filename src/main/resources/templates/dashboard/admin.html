@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page('Admin dashboard', ~{::content})}">
+<section th:fragment="content" class="dashboard-page" data-page-mode="dashboard">
+    <div class="skeleton-shell" data-skeleton-shell>
+        <div data-skeleton-loader hidden>
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="card shadow-sm border-0 h-100 p-4">
+                        <div class="skeleton skeleton-kicker w-25"></div>
+                        <div class="skeleton skeleton-title w-50"></div>
+                        <div class="skeleton skeleton-text w-75"></div>
+                    </div>
+                </div>
+                <div class="col-md-6" th:each="item : ${#numbers.sequence(1,2)}">
+                    <div class="card shadow-sm border-0 h-100 p-4">
+                        <div class="skeleton skeleton-kicker w-50"></div>
+                        <div class="skeleton skeleton-title w-75 mt-3"></div>
+                        <div class="skeleton skeleton-card mt-3"></div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="card shadow-sm border-0 h-100 p-4">
+                        <div class="skeleton skeleton-kicker w-25"></div>
+                        <div class="skeleton skeleton-title w-50 mt-3"></div>
+                        <div class="skeleton skeleton-card mt-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div data-skeleton-content>
+            <div class="dashboard-layout dashboard-container">
+                <section class="surface-card dashboard-hero">
+                    <span class="eyebrow">Admin dashboard</span>
+                    <h3 class="mt-3 mb-2">
+                        Welcome,
+                        <span th:text="${loggedInUser.name}">Admin</span>
+                    </h3>
+                    <p class="text-body-secondary mb-0">Review platform-wide users, revenue movement, and operational volume in one compact dashboard.</p>
+                </section>
+
+                <div class="dashboard-grid">
+                    <section class="surface-card chart-panel dashboard-card">
+                        <div class="chart-panel__header mb-3">
+                            <div>
+                                <span class="dashboard-card__kicker">User mix</span>
+                                <h4 class="mt-3 mb-2">Platform user distribution</h4>
+                                <p class="text-body-secondary mb-0">Tenant, landlord, and admin accounts are visible in a single compact chart.</p>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card__body">
+                            <div class="chart-box">
+                                <canvas id="adminUserChart"></canvas>
+                            </div>
+                            <div class="dashboard-card__summary">
+                                <div class="dashboard-card__stat">
+                                    <span>Total Users</span>
+                                    <strong th:text="${totalUsers}">0</strong>
+                                </div>
+                                <div class="dashboard-card__stat">
+                                    <span>Total Tenants</span>
+                                    <strong th:text="${totalTenants}">0</strong>
+                                </div>
+                                <div class="dashboard-card__stat">
+                                    <span>Total Landlords</span>
+                                    <strong th:text="${totalLandlords}">0</strong>
+                                </div>
+                                <div class="dashboard-card__stat">
+                                    <span>Total Admins</span>
+                                    <strong th:text="${totalAdmins}">0</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="surface-card chart-panel dashboard-card">
+                        <div class="chart-panel__header mb-3">
+                            <div>
+                                <span class="dashboard-card__kicker">Revenue trend</span>
+                                <h4 class="mt-3 mb-2">Monthly platform revenue</h4>
+                                <p class="text-body-secondary mb-0">Paid bookings are grouped by month so revenue direction stays visible at a glance.</p>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card__body">
+                            <div th:if="${#lists.isEmpty(revenueTrendLabels)}" class="chart-empty chart-box">
+                                No payment history is available yet.
+                            </div>
+                            <div th:unless="${#lists.isEmpty(revenueTrendLabels)}" class="chart-box">
+                                <canvas id="revenueChart"></canvas>
+                            </div>
+                            <div class="dashboard-card__summary dashboard-card__summary--split">
+                                <div class="dashboard-card__stat">
+                                    <span>Total Properties</span>
+                                    <strong th:text="${totalProperties}">0</strong>
+                                </div>
+                                <div class="dashboard-card__stat">
+                                    <span>Total Bookings</span>
+                                    <strong th:text="${totalBookings}">0</strong>
+                                </div>
+                                <div class="dashboard-card__stat">
+                                    <span>Total Revenue</span>
+                                    <strong th:text="${'INR ' + #numbers.formatDecimal(totalRevenue, 0, 'COMMA', 2, 'POINT')}">INR 0.00</strong>
+                                </div>
+                                <div class="dashboard-card__stat">
+                                    <span>Pending Landlords</span>
+                                    <strong th:text="${pendingLandlords}">0</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <section class="surface-card chart-panel dashboard-card dashboard-bottom">
+                    <div class="chart-panel__header mb-3">
+                        <div>
+                            <span class="dashboard-card__kicker">Platform volume</span>
+                            <h4 class="mt-3 mb-2">Core operations snapshot</h4>
+                            <p class="text-body-secondary mb-0">Users, properties, and bookings stay visible in a compact bottom chart.</p>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card__body">
+                        <div class="chart-box chart-box--sm">
+                            <canvas id="adminVolumeChart"></canvas>
+                        </div>
+                        <div class="dashboard-mini-grid">
+                            <div class="dashboard-card__stat">
+                                <span>Total Users</span>
+                                <strong th:text="${totalUsers}">0</strong>
+                            </div>
+                            <div class="dashboard-card__stat">
+                                <span>Total Properties</span>
+                                <strong th:text="${totalProperties}">0</strong>
+                            </div>
+                            <div class="dashboard-card__stat">
+                                <span>Total Bookings</span>
+                                <strong th:text="${totalBookings}">0</strong>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof Chart === 'undefined') {
+                return;
+            }
+
+            const compactLegend = {
+                position: 'bottom',
+                labels: {
+                    font: {
+                        size: 11
+                    },
+                    boxWidth: 12,
+                    padding: 10
+                }
+            };
+
+            const adminUserChartElement = document.getElementById('adminUserChart');
+            if (adminUserChartElement) {
+                new Chart(adminUserChartElement, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Tenants', 'Landlords', 'Admins'],
+                        datasets: [{
+                            data: [
+                                /*[[${totalTenants}]]*/ 0,
+                                /*[[${totalLandlords}]]*/ 0,
+                                /*[[${totalAdmins}]]*/ 0
+                            ],
+                            backgroundColor: ['#4a90e2', '#feca57', '#764ba2'],
+                            borderColor: '#ffffff',
+                            borderWidth: 3,
+                            radius: '85%',
+                            cutout: '40%'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        layout: {
+                            padding: 10
+                        },
+                        plugins: {
+                            legend: compactLegend
+                        }
+                    }
+                });
+            }
+
+            const revenueChartElement = document.getElementById('revenueChart');
+            if (revenueChartElement) {
+                new Chart(revenueChartElement, {
+                    type: 'line',
+                    data: {
+                        labels: /*[[${revenueTrendLabels}]]*/ [],
+                        datasets: [{
+                            label: 'Revenue',
+                            data: /*[[${revenueTrendValues}]]*/ [],
+                            borderColor: '#4a90e2',
+                            backgroundColor: 'rgba(74, 144, 226, 0.18)',
+                            fill: true,
+                            tension: 0.32,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        layout: {
+                            padding: 10
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            const adminVolumeChartElement = document.getElementById('adminVolumeChart');
+            if (adminVolumeChartElement) {
+                new Chart(adminVolumeChartElement, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Users', 'Properties', 'Bookings'],
+                        datasets: [{
+                            label: 'Platform volume',
+                            data: [
+                                /*[[${totalUsers}]]*/ 0,
+                                /*[[${totalProperties}]]*/ 0,
+                                /*[[${totalBookings}]]*/ 0
+                            ],
+                            backgroundColor: ['#667eea', '#2ecc71', '#ff9f43'],
+                            borderRadius: 12,
+                            maxBarThickness: 42
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        layout: {
+                            padding: 10
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</section>
+</html>

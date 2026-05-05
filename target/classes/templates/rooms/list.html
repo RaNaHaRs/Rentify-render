@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page('Explore listings', ~{::content})}">
+<section th:fragment="content" class="content-page page-container" data-page-mode="content">
+    <section class="surface-card dashboard-hero my-4 my-lg-5">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+                <span class="eyebrow">Explore listings</span>
+                <h1 class="h2 mt-3 mb-2">Find the right stay with a filter-first browsing layout.</h1>
+                <p class="text-body-secondary mb-0">Browse available listings and narrow results with simple filters.</p>
+            </div>
+            <a class="btn btn-soft" th:href="@{/rooms}">Reset filters</a>
+        </div>
+    </section>
+
+    <div class="row g-4 align-items-start">
+        <div class="col-lg-4">
+            <div class="surface-card p-4 sticky-lg-top room-filter">
+                <span class="eyebrow">Search filters</span>
+                <h2 class="h4 mt-3">Refine your stay</h2>
+                <p class="text-body-secondary">Filter listings by city, guest count, price, and stay dates.</p>
+
+                <form th:action="@{/rooms}" th:object="${search}" method="get" class="row g-3 mt-1">
+                    <div class="col-12">
+                        <label class="form-label">Keyword</label>
+                        <input class="form-control" th:field="*{keyword}" placeholder="Loft, villa, quiet, work-friendly">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">City</label>
+                        <input class="form-control" th:field="*{locality}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Guests</label>
+                        <input class="form-control" th:field="*{guests}" type="number" min="1">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Min price</label>
+                        <input class="form-control" th:field="*{minPrice}" type="number" min="0" step="100">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Max price</label>
+                        <input class="form-control" th:field="*{maxPrice}" type="number" min="0" step="100">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Check-in</label>
+                        <input class="form-control" th:field="*{checkInDate}" type="date">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Check-out</label>
+                        <input class="form-control" th:field="*{checkOutDate}" type="date">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Property type</label>
+                        <select class="form-select" th:field="*{typeSlug}">
+                            <option value="">Any type</option>
+                            <option th:each="type : ${roomTypes}" th:value="${#strings.toLowerCase(type.label)}" th:text="${type.label}">Type</option>
+                        </select>
+                    </div>
+                    <div class="col-12 d-grid">
+                        <button class="btn btn-brand" type="submit">Apply filters</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="skeleton-shell" data-skeleton-shell>
+                <div data-skeleton-loader hidden>
+                    <div class="results-toolbar mb-4">
+                        <div class="results-toolbar__meta">
+                            <div class="w-100">
+                                <div class="skeleton skeleton-kicker w-25"></div>
+                                <div class="skeleton skeleton-title w-50"></div>
+                                <div class="skeleton skeleton-text w-75 mb-0"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-md-6" th:each="item : ${#numbers.sequence(1,4)}">
+                            <article class="listing-card h-100 skeleton-listing-card p-3">
+                                <div class="skeleton skeleton-card mb-3"></div>
+                                <div class="skeleton skeleton-title"></div>
+                                <div class="skeleton skeleton-text"></div>
+                                <div class="skeleton skeleton-text w-75"></div>
+                                <div class="d-flex justify-content-between gap-3 mt-auto pt-3">
+                                    <div class="flex-grow-1">
+                                        <div class="skeleton skeleton-text w-50 mb-0"></div>
+                                    </div>
+                                    <div class="skeleton skeleton-button"></div>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+                </div>
+
+                <div data-skeleton-content>
+                    <div class="results-toolbar mb-4">
+                        <div class="results-toolbar__meta">
+                            <div>
+                                <span class="eyebrow">Results</span>
+                                <p class="h4 mt-3 mb-1"><span th:text="${#lists.size(rooms)}">0</span> listings found</p>
+                                <p class="text-body-secondary mb-0">Compare available stays with quick details and pricing.</p>
+                            </div>
+                            <span class="status-pill status-pill--primary">Responsive grid</span>
+                        </div>
+                    </div>
+
+                    <div class="row g-4" th:if="${!#lists.isEmpty(rooms)}">
+                        <div class="col-md-6" th:each="room : ${rooms}">
+                            <article class="listing-card h-100">
+                                <div class="listing-card__media">
+                                    <img class="listing-card__image" th:src="${room.imageUrl}" alt="Room image">
+                                    <div class="listing-card__overlay">
+                                        <span class="status-pill status-pill--accent" th:text="${room.type}">Type</span>
+                                        <span class="status-pill status-pill--light">Available</span>
+                                    </div>
+                                </div>
+                                <div class="listing-card__body">
+                                    <div class="d-flex justify-content-between gap-3 align-items-start">
+                                        <div>
+                                            <h2 class="h5 mb-1" th:text="${room.title}">Sunlit River Loft</h2>
+                                            <p class="text-body-secondary mb-2" th:text="${room.location}">Goa</p>
+                                            <p class="small mb-0">Hosted by <span th:text="${room.hostDisplayName}">Host</span></p>
+                                        </div>
+                                        <div class="text-end">
+                                            <p class="price-tag mb-2" th:text="${'INR ' + #numbers.formatDecimal(room.overnightPrice, 0, 'COMMA', 2, 'POINT')}">INR 4200.00</p>
+                                            <small class="text-body-secondary" th:text="${room.maxPeople + ' guests'}">4 guests</small>
+                                        </div>
+                                    </div>
+                                    <div class="listing-card__meta">
+                                        <span th:text="${'Rating ' + #numbers.formatDecimal(room.averageRating, 1, 1)}">Rating 5.0</span>
+                                        <span>Ready to book</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mt-auto pt-2">
+                                        <small class="text-body-secondary">Rounded card layout</small>
+                                        <a class="btn btn-soft btn-sm" th:href="@{'/rooms/' + ${room.id}}">View details</a>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+
+                    <div class="empty-state" th:if="${#lists.isEmpty(rooms)}">
+                        <h2 class="h4">No listings match the current filters.</h2>
+                        <p class="text-body-secondary mb-0">Adjust the city, dates, or price range and try again.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</html>

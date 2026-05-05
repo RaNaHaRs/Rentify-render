@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page('My bookings', ~{::content})}">
+<section th:fragment="content" class="page-container" data-page-mode="content">
+    <section class="surface-card dashboard-hero my-4 my-lg-5">
+        <span class="eyebrow">Tenant workspace</span>
+        <h1 class="h2 mt-3 mb-2">My bookings</h1>
+        <p class="text-body-secondary mb-0">Review reservation status, cancel eligible requests, and jump back into payment when needed.</p>
+    </section>
+
+    <div class="surface-card p-4 p-lg-5">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+            <div>
+                <h2 class="h4 mb-1">Booking history</h2>
+                <p class="text-body-secondary mb-0">All reservation activity linked to your account.</p>
+            </div>
+            <span class="status-pill status-pill--neutral" th:text="${totalBookings + ' total'}">0 total</span>
+        </div>
+
+        <div th:if="${#lists.isEmpty(reservations)}" class="text-body-secondary">
+            No reservations yet. Browse properties to place your first booking.
+        </div>
+
+        <div th:each="reservation : ${reservations}" class="reservation-row" th:with="statusText=${reservation.status.toString()}">
+            <div>
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                    <h3 class="h5 mb-0" th:text="${reservation.roomTitle}">Room title</h3>
+                    <span class="status-pill"
+                          th:classappend="${statusText == 'APPROVED'} ? ' status-pill--success' : (${statusText == 'PENDING'} ? ' status-pill--warning' : ' status-pill--danger')"
+                          th:text="${statusText}">APPROVED</span>
+                    <span class="status-pill status-pill--primary" th:if="${reservation.paid}">PAID</span>
+                </div>
+                <p class="text-body-secondary mb-1" th:text="${reservation.roomLocation}">Location</p>
+                <p class="small mb-0" th:text="${reservation.checkInDate + ' to ' + reservation.checkOutDate + ' | ' + reservation.guests + ' guests'}">Stay details</p>
+            </div>
+            <div class="reservation-total">
+                <div class="price-tag" th:text="${'INR ' + #numbers.formatDecimal(reservation.totalCost, 0, 'COMMA', 2, 'POINT')}">INR 0.00</div>
+                <div class="d-flex flex-column align-items-end gap-2 mt-3">
+                    <form th:if="${(statusText == 'PENDING' or statusText == 'APPROVED') and !reservation.paid}"
+                          th:action="@{/bookings/cancel/{id}(id=${reservation.id})}"
+                          method="post"
+                          class="m-0">
+                        <button class="btn btn-outline-dark btn-sm" type="submit">Cancel booking</button>
+                    </form>
+                    <a class="btn btn-brand btn-sm" th:if="${statusText == 'APPROVED' and !reservation.paid}" th:href="@{'/payments/' + ${reservation.id}}">Pay now</a>
+                    <span class="small text-body-secondary" th:if="${statusText == 'APPROVED' and reservation.paid}">Payment completed</span>
+                    <a class="btn btn-soft btn-sm" th:href="@{'/rooms/' + ${reservation.roomId}}">View listing</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</html>

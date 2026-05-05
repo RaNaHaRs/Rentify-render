@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page('Users', ~{::content})}">
+<section th:fragment="content" class="page-container" data-page-mode="content">
+    <section class="surface-card dashboard-hero my-4 my-lg-5">
+        <span class="eyebrow">Admin workspace</span>
+        <h1 class="h2 mt-3 mb-2">Users</h1>
+        <p class="text-body-secondary mb-0">Approve new landlords and search the landlord and tenant directories.</p>
+    </section>
+
+    <div class="surface-card p-4 p-lg-5 mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+            <div>
+                <h2 class="h4 mb-1">Landlords awaiting approval</h2>
+                <p class="text-body-secondary mb-0">Review new host accounts and approve them when ready.</p>
+            </div>
+            <span class="status-pill status-pill--warning" th:text="${dashboard.pendingLandlords + ' pending'}">0 pending</span>
+        </div>
+
+        <div th:if="${#lists.isEmpty(dashboard.landlordsAwaitingApproval)}" class="text-body-secondary">
+            No landlord approvals are pending.
+        </div>
+
+        <div th:each="landlord : ${dashboard.landlordsAwaitingApproval}" class="reservation-row">
+            <div>
+                <h3 class="h5 mb-1" th:text="${landlord.displayName}">Landlord</h3>
+                <p class="text-body-secondary mb-0">@<span th:text="${landlord.username}">username</span></p>
+            </div>
+            <form th:action="@{'/admin/landlords/' + ${landlord.id} + '/confirm'}" method="post">
+                <button class="btn btn-brand btn-sm" type="submit">Approve landlord</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="surface-card p-4 p-lg-5">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <h2 class="h4 mb-1">User directory</h2>
+                <p class="text-body-secondary mb-0">Search landlords and tenants by name or email.</p>
+            </div>
+            <div class="w-100 w-md-auto">
+                <input class="form-control" id="userSearch" type="text" placeholder="Search users..." data-user-search>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-12 col-xxl-6">
+                <div class="table-responsive" data-user-directory>
+                    <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
+                        <div>
+                            <h3 class="h5 mb-1">Landlord list</h3>
+                            <p class="text-body-secondary mb-0">Accounts registered as landlords.</p>
+                        </div>
+                        <span class="status-pill status-pill--neutral" th:text="${#lists.size(dashboard.landlords) + ' users'}">0 users</span>
+                    </div>
+
+                    <table class="table align-middle mb-0">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Created date</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${#lists.isEmpty(dashboard.landlords)}">
+                            <td colspan="4" class="text-body-secondary">No landlords found.</td>
+                        </tr>
+                        <tr th:each="landlord : ${dashboard.landlords}"
+                            data-user-row
+                            th:attr="data-user-filter=${(landlord.displayName ?: '') + ' ' + (landlord.email ?: '')}">
+                            <td th:text="${landlord.displayName}">Landlord</td>
+                            <td th:text="${landlord.email}">landlord@rentify.local</td>
+                            <td th:text="${landlord.role}">LANDLORD</td>
+                            <td th:text="${#temporals.format(landlord.createdAt, 'dd MMM yyyy')}">22 Mar 2026</td>
+                        </tr>
+                        <tr class="d-none" data-user-empty th:if="${!#lists.isEmpty(dashboard.landlords)}">
+                            <td colspan="4" class="text-body-secondary">No landlords match your search.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-12 col-xxl-6">
+                <div class="table-responsive" data-user-directory>
+                    <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
+                        <div>
+                            <h3 class="h5 mb-1">Tenant list</h3>
+                            <p class="text-body-secondary mb-0">Accounts registered as tenants.</p>
+                        </div>
+                        <span class="status-pill status-pill--neutral" th:text="${#lists.size(dashboard.tenants) + ' users'}">0 users</span>
+                    </div>
+
+                    <table class="table align-middle mb-0">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Created date</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${#lists.isEmpty(dashboard.tenants)}">
+                            <td colspan="4" class="text-body-secondary">No tenants found.</td>
+                        </tr>
+                        <tr th:each="tenant : ${dashboard.tenants}"
+                            data-user-row
+                            th:attr="data-user-filter=${(tenant.displayName ?: '') + ' ' + (tenant.email ?: '')}">
+                            <td th:text="${tenant.displayName}">Tenant</td>
+                            <td th:text="${tenant.email}">tenant@rentify.local</td>
+                            <td th:text="${tenant.role}">TENANT</td>
+                            <td th:text="${#temporals.format(tenant.createdAt, 'dd MMM yyyy')}">22 Mar 2026</td>
+                        </tr>
+                        <tr class="d-none" data-user-empty th:if="${!#lists.isEmpty(dashboard.tenants)}">
+                            <td colspan="4" class="text-body-secondary">No tenants match your search.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</html>

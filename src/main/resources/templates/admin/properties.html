@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page('Properties', ~{::content})}">
+<section th:fragment="content" class="page-container" data-page-mode="content">
+    <section class="surface-card dashboard-hero my-4 my-lg-5">
+        <span class="eyebrow">Admin workspace</span>
+        <h1 class="h2 mt-3 mb-2">Properties</h1>
+        <p class="text-body-secondary mb-0">Review every property in the platform and delete any listing when administrative action is required.</p>
+    </section>
+
+    <div class="surface-card p-4 p-lg-5">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+            <div>
+                <h2 class="h4 mb-1">All properties</h2>
+                <p class="text-body-secondary mb-0">Listings currently stored in the database.</p>
+            </div>
+            <span class="status-pill status-pill--neutral" th:text="${#lists.size(properties) + ' properties'}">0 properties</span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead>
+                <tr>
+                    <th>Property Title</th>
+                    <th>Location</th>
+                    <th>Price</th>
+                    <th>Landlord Name</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(properties)}">
+                    <td colspan="6" class="text-body-secondary">No properties available.</td>
+                </tr>
+                <tr th:each="property : ${properties}">
+                    <td th:text="${property.title}">Listing title</td>
+                    <td th:text="${property.location}">Location</td>
+                    <td th:text="${'INR ' + #numbers.formatDecimal(property.overnightPrice, 0, 'COMMA', 2, 'POINT')}">INR 0.00</td>
+                    <td th:text="${property.hostDisplayName}">Landlord</td>
+                    <td>
+                        <span class="status-pill"
+                              th:classappend="${property.listingStatus == 'ACTIVE'} ? ' status-pill--success' : ' status-pill--warning'"
+                              th:text="${property.listingStatus}">ACTIVE</span>
+                    </td>
+                    <td>
+                        <form th:action="@{/admin/properties/delete/{id}(id=${property.id})}" method="post" class="m-0">
+                            <button class="btn btn-danger btn-sm" type="submit" onclick="return confirm('Delete this property?')">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</html>

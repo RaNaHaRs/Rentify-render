@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: page(${profile.user.displayName}, ~{::content})}">
+<section th:fragment="content" class="content-page page-container" data-page-mode="content">
+    <section class="my-4 my-lg-5">
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="surface-card p-4 p-lg-5">
+                    <div class="profile-avatar" th:text="${!#strings.isEmpty(profile.user.displayName) ? #strings.toUpperCase(#strings.substring(profile.user.displayName, 0, 1)) : 'R'}">R</div>
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                        <span class="eyebrow" th:text="${profile.user.role}">LANDLORD</span>
+                        <span class="status-pill status-pill--primary" th:if="${isOwnProfile}">Your profile</span>
+                    </div>
+                    <h1 class="h2 mt-3 mb-1" th:text="${profile.user.displayName}">Mira Kapoor</h1>
+                    <p class="text-body-secondary mb-3">@<span th:text="${profile.user.username}">username</span></p>
+                    <p class="mb-3" th:text="${profile.about}">Profile bio</p>
+
+                    <div class="profile-meta">
+                        <div><strong>Location</strong><span th:text="${profile.location != null ? profile.location.formattedAddress : 'Not set'}">Goa</span></div>
+                        <div><strong>Listings</strong><span th:text="${profile.listingsCount}">3</span></div>
+                        <div><strong>Reservations</strong><span th:text="${profile.reservationsCount}">2</span></div>
+                    </div>
+
+                    <a class="btn btn-soft mt-4" th:if="${isOwnProfile}" th:href="@{/account/profile}">Edit profile</a>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="surface-card p-4 p-lg-5 mb-4">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+                        <div>
+                            <span class="eyebrow">Community</span>
+                            <h2 class="h4 mt-3 mb-1">Guest comments</h2>
+                            <p class="text-body-secondary mb-0">Feedback and conversation around this profile.</p>
+                        </div>
+                        <span class="status-pill status-pill--neutral" th:text="${#lists.size(profile.comments) + ' total'}">0 total</span>
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(profile.comments)}" class="text-body-secondary">No comments yet.</div>
+                    <div th:each="comment : ${profile.comments}" class="review-card">
+                        <div class="d-flex justify-content-between align-items-start gap-3">
+                            <div>
+                                <h3 class="h6 mb-1" th:text="${comment.authorDisplayName}">Guest</h3>
+                                <p class="small text-body-secondary mb-0" th:text="${#temporals.format(comment.createdAt, 'dd MMM yyyy')}">20 Mar 2026</p>
+                            </div>
+                        </div>
+                        <p class="mb-0 mt-2" th:text="${comment.content}">Comment text</p>
+                    </div>
+                </div>
+
+                <div class="surface-card p-4 p-lg-5" sec:authorize="isAuthenticated()">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+                        <div>
+                            <span class="eyebrow">Add feedback</span>
+                            <h2 class="h4 mt-3 mb-1">Leave a comment</h2>
+                            <p class="text-body-secondary mb-0">The form binding and submit route remain unchanged.</p>
+                        </div>
+                        <span class="status-pill status-pill--primary">Authenticated</span>
+                    </div>
+
+                    <form th:action="@{'/profiles/' + ${profile.user.username} + '/comments'}" th:object="${commentRequest}" method="post" class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label">Comment</label>
+                            <textarea class="form-control" th:field="*{content}" rows="4"></textarea>
+                            <div class="field-error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></div>
+                        </div>
+                        <div class="col-12 d-grid">
+                            <button class="btn btn-brand" type="submit">Post comment</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>
+</html>
