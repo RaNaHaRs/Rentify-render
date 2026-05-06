@@ -1,0 +1,129 @@
+# Build Files
+target/
+build/
+.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+
+# Maven
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+.mvn/
+
+# IDE - VS Code
+.vscode/
+*.code-workspace
+.history/
+
+# IDE - IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# IDE - Eclipse
+.classpath
+.project
+.settings/
+.metadata/
+bin/
+.c9/
+*.sublime-workspace
+
+# IDE - Other
+.DS_Store
+Thumbs.db
+.swp
+.swo
+*~
+.temp
+
+# Logs
+logs/
+*.log
+*.log.*
+*.gz
+
+# Temporary Files
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+
+# Environment & Configuration (SENSITIVE DATA)
+.env
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.production
+.env.*
+
+# Spring Boot Application Config (SENSITIVE)
+application-dev.yml
+application-prod.yml
+application-local.yml
+
+# Database
+# H2 Database Files
+*.mv.db
+*.trace.db
+*.h2.db
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Credentials & Secrets
+credentials.txt
+crendentials.txt
+secrets/
+*.key
+*.pem
+*.p12
+*.pkcs12
+private-key
+public-key
+
+# Spring Boot
+spring-shell.log
+
+# Node (if using any frontend build tools)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Gradle (alternative build tool)
+.gradle/
+gradle-wrapper.jar
+
+
+
+# Uploads & Data
+uploads/
+data/*.db
+data/*.sqlite
+
+# Runtime
+*.pid
+*.seed
+*.pid.lock
+
+# IDE Cache
+.cache/
+.vscode-test/
+.DS_Store
