@@ -27,6 +27,7 @@ server:
 app:
   name: Rentify
   bootstrap:
+    enabled: ${APP_BOOTSTRAP_ENABLED:false}
     admin-username: ${BOOTSTRAP_ADMIN_USERNAME:admin}
     admin-password: ${BOOTSTRAP_ADMIN_PASSWORD}
     landlord-username: ${BOOTSTRAP_LANDLORD_USERNAME:landlord}
